@@ -46,6 +46,9 @@ import kotlinx.serialization.Serializable
 class SignPage
 
 @Serializable
+class SignInPage
+
+@Serializable
 class HomePage
 
 @Serializable
@@ -56,6 +59,7 @@ class FoodRegistrationPage
 
 @Serializable
 class AdvisePage
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +88,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                     ) {
                         composable<SignPage> {
-                            SignPageScreen()
+                            SignPageScreen(navController)
                         }
                         composable<HomePage> {
                             HomePageScreen(navController)
@@ -97,6 +101,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<AdvisePage> {
                             AdvisePageScreen()
+                        }
+                        composable<SignInPage> {
+                            SignInPageScreen(navController)
                         }
 
                     }
@@ -191,3 +198,4 @@ fun ImageType(logoName: Int) {
         contentScale = ContentScale.Crop
     )
 }
+

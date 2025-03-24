@@ -14,9 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
 @Composable
-fun SignPageScreen() {
+fun SignPageScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()  // Remplit tout l'écran
@@ -26,16 +27,16 @@ fun SignPageScreen() {
     ) {
         ImageType(R.drawable.logo)
         Spacer(modifier = Modifier.height(5.dp))
-        ButtonSign("Sign In")
+        ButtonSign("Sign In",navController) { navController.navigate(SignInPage()) }
         Spacer(modifier = Modifier.height(5.dp))
-        ButtonSign("Sign up")
+        //ButtonSign("Sign up", navController) { navController.navigate(SignUpPage()) }
     }
 }
 
 
 @Composable
-fun ButtonSign(text: String){
-    Button(onClick = { TODO() },
+fun ButtonSign(text: String, navController: NavHostController, function: () -> Unit){
+    Button(onClick = function,
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
     ) {
         Text(text = text, color = Color.White)
