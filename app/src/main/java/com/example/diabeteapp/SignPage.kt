@@ -29,7 +29,7 @@ fun SignPageScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(5.dp))
         ButtonSign("Sign In",navController) { navController.navigate(SignInPage()) }
         Spacer(modifier = Modifier.height(5.dp))
-        //ButtonSign("Sign up", navController) { navController.navigate(SignUpPage()) }
+        ButtonSign("Sign up", navController) { navController.navigate(SignUpPage()) }
     }
 }
 

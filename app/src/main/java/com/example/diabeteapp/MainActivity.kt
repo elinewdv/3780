@@ -47,6 +47,8 @@ class SignPage
 
 @Serializable
 class SignInPage
+@Serializable
+class SignUpPage
 
 @Serializable
 class HomePage
@@ -107,6 +109,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<SignInPage> {
                             SignInPageScreen(navController)
+                        }
+                        composable<SignUpPage> {
+                            SignUpPageScreen(navController)
                         }
                         composable<UserProfilePage> {
                             UserProfilePageScreen(navController)
