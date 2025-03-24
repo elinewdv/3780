@@ -3,6 +3,7 @@ package com.example.diabeteapp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -19,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.compose.material3.Text
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +54,7 @@ fun SignInPageScreen(navController: NavHostController) {
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         // Email
         Text("E-mail",color=Color(0xFF2264FF))
@@ -64,9 +64,9 @@ fun SignInPageScreen(navController: NavHostController) {
             onValueChange = { email = it },
             label = { Text("E-mail", fontWeight = FontWeight.Bold, color = Color(0xFF2264FF)) },
             modifier = Modifier
-                .fillMaxWidth()
                 .background(Color(0xFF2264FF))
                 .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.Transparent,
@@ -89,9 +89,9 @@ fun SignInPageScreen(navController: NavHostController) {
             onValueChange = { password = it },
             label = { Text("Password", fontWeight = FontWeight.Bold, color = Color(0xFF2264FF)) },
             modifier = Modifier
-                .fillMaxWidth()
                 .background(Color(0xFF2264FF))
                 .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
@@ -118,7 +118,7 @@ fun SignInPageScreen(navController: NavHostController) {
 
         // Bouton Confirm
         Button(
-            onClick = { navController.navigate(HomePage()) },
+            onClick = { navController.navigate(TargetPage()) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

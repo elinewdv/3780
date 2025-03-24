@@ -60,6 +60,9 @@ class FoodRegistrationPage
 @Serializable
 class AdvisePage
 
+@Serializable
+class UserProfilePage
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,6 +108,9 @@ class MainActivity : ComponentActivity() {
                         composable<SignInPage> {
                             SignInPageScreen(navController)
                         }
+                        composable<UserProfilePage> {
+                            UserProfilePageScreen(navController)
+                        }
 
                     }
                 }
@@ -141,7 +147,7 @@ fun TopBar( navController: NavController) {
         },
         actions = {
             IconButton(onClick = {
-                navController.navigate(SignPage())
+                navController.navigate(UserProfilePage())
             }) {
                 Icon(
                     imageVector = Icons.Outlined.AccountCircle,
