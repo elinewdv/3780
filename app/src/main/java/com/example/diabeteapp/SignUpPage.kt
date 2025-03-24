@@ -42,7 +42,7 @@ fun SignUpPageScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-
+//
         // Name Input
         Text("Name",color=Color(0xFF2264FF))
         Spacer(modifier = Modifier.height(5.dp))
