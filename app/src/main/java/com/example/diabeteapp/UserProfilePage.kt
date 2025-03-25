@@ -68,7 +68,6 @@ fun UserProfilePageScreen(navController: NavHostController) {
         Row {
             DiabetesCheckbox("Type 1", selectedDiabetesType) { selectedDiabetesType = it }
             DiabetesCheckbox("Type 2", selectedDiabetesType) { selectedDiabetesType = it }
-            DiabetesCheckbox("Type 3", selectedDiabetesType) { selectedDiabetesType = it }
         }
 
         Spacer(modifier = Modifier.height(10.dp))

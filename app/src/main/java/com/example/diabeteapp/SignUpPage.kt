@@ -26,6 +26,8 @@ fun SignUpPageScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    var color = Color(0xFF2264FF)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,35 +46,35 @@ fun SignUpPageScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
 //
         // Name Input
-        Text("Name",color=Color(0xFF2264FF))
+        Text("Name",color=color)
         Spacer(modifier = Modifier.height(5.dp))
         InputField(value = name, onValueChange = { name = it }, label = "Name")
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Age Group Input
-        Text("Age",color=Color(0xFF2264FF))
+        Text("Age",color=color)
         Spacer(modifier = Modifier.height(5.dp))
         InputField(value = ageGroup, onValueChange = { ageGroup = it }, label = "Age group", placeholder = "../../..")
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Email Input
-        Text("E-mail",color=Color(0xFF2264FF))
+        Text("E-mail",color=color)
         Spacer(modifier = Modifier.height(5.dp))
         InputField(value = email, onValueChange = { email = it }, label = "E-mail", keyboardType = KeyboardType.Email)
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Password Input
-        Text("Password",color=Color(0xFF2264FF))
+        Text("Password",color=color)
         Spacer(modifier = Modifier.height(5.dp))
         InputField(value = password, onValueChange = { password = it }, label = "Password", keyboardType = KeyboardType.Password)
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Confirm Password Input
-        Text("Confirm Password",color=Color(0xFF2264FF))
+        Text("Confirm Password",color=color)
         Spacer(modifier = Modifier.height(5.dp))
         InputField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = "Confirm password", keyboardType = KeyboardType.Password)
 
@@ -85,7 +87,7 @@ fun SignUpPageScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
+            colors = ButtonDefaults.buttonColors(containerColor = color)
         ) {
             Text(text = "Next", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
         }
