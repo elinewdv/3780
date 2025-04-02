@@ -134,7 +134,7 @@ fun TopBar( navController: NavController) {
         ),
         title = {
                 Text(
-                    "Fatty's",
+                    "Jumper",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
