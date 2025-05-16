@@ -82,14 +82,13 @@ fun SignUpPageScreen(navController: NavHostController) {
 
         // Next Button
         Button(
-            onClick = { navController.navigate("next_page") },
+            onClick = { navController.navigate(TargetPage()) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = color)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
         ) {
-            Text(text = "Next", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(text = "Confirm", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }

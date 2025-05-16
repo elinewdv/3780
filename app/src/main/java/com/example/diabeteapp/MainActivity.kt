@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -81,10 +82,10 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     topBar = {
-                        if (currentDestination?.hasRoute<HomePage>() != true) {
+                        if (!principalPages(currentDestination)) {
                     TopBar(navController)}
                 }, bottomBar = {
-                        if (currentDestination?.hasRoute<HomePage>() != true) {BottomBar(navController)}
+                        if (!principalPages(currentDestination)) {BottomBar(navController)}
                 }
                 ) { innerPadding ->
 
@@ -145,7 +146,7 @@ fun TopBar( navController: NavController) {
             },
         navigationIcon = {
             IconButton(onClick = {
-                TODO()
+                navController.navigate(HomePage())
             }) {
                 ImageType(R.drawable.logo_blue)
             }
@@ -210,3 +211,7 @@ fun ImageType(logoName: Int) {
     )
 }
 
+@Composable
+fun principalPages(currentDestination: NavDestination?): Boolean {
+    return currentDestination?.hasRoute<HomePage>() == true || currentDestination?.hasRoute<SignPage>() == true || currentDestination?.hasRoute<UserProfilePage>() == true || currentDestination?.hasRoute<SignInPage>() == true || currentDestination?.hasRoute<SignUpPage>() == true
+}
