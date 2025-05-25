@@ -24,11 +24,14 @@ data class Category(
     val ingredients: List<Ingredient>,
     var isExpanded: Boolean = false
 )
-
 @Composable
 fun FoodPageScreen() {
     val color = Color(0xFF2264FF)
     var searchQuery by remember { mutableStateOf("") }
+    val showDialog = remember { mutableStateOf(false) }
+
+    // Quantités globales des ingrédients
+    val ingredientQuantities = remember { mutableStateMapOf<Ingredient, Int>() }
 
     val categories = remember {
         mutableStateListOf(
@@ -81,7 +84,11 @@ fun FoodPageScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
             categories.forEachIndexed { index, category ->
                 item {
                     CategoryBlock(
@@ -91,12 +98,46 @@ fun FoodPageScreen() {
                         onToggleExpand = {
                             categories[index] = category.copy(isExpanded = !category.isExpanded)
                         },
-                        onAdd = {
-                            // handle added ingredients here...
-                        }
+                        ingredientQuantities = ingredientQuantities
                     )
                 }
             }
+        }
+
+        Button(
+            onClick = { showDialog.value = true },
+            colors = ButtonDefaults.buttonColors(containerColor = color),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text("Confirm", color = Color.White)
+        }
+
+        // Dialog
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = { Text("Selected Ingredients") },
+                text = {
+                    Column {
+                        ingredientQuantities
+                            .filter { it.value > 0 }
+                            .forEach { (ingredient, quantity) ->
+                                Text("${ingredient.name}: $quantity")
+                            }
+
+                        if (ingredientQuantities.none { it.value > 0 }) {
+                            Text("No ingredients selected.")
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog.value = false }) {
+                        Text("OK")
+                    }
+                }
+            )
         }
     }
 }
@@ -107,7 +148,7 @@ fun CategoryBlock(
     color: Color,
     searchQuery: String,
     onToggleExpand: () -> Unit,
-    onAdd: (Ingredient) -> Unit
+    ingredientQuantities: MutableMap<Ingredient, Int>
 ) {
     Column(
         modifier = Modifier
@@ -137,14 +178,20 @@ fun CategoryBlock(
             category.ingredients
                 .filter { it.name.contains(searchQuery, ignoreCase = true) }
                 .forEach { ingredient ->
-                    IngredientRow(ingredient, color, onAdd)
+                    IngredientRow(ingredient, color, ingredientQuantities)
                 }
         }
     }
 }
 
 @Composable
-fun IngredientRow(ingredient: Ingredient, color: Color, onAdd: (Ingredient) -> Unit) {
+fun IngredientRow(
+    ingredient: Ingredient,
+    color: Color,
+    ingredientQuantities: MutableMap<Ingredient, Int>
+) {
+    val quantity = ingredientQuantities[ingredient] ?: 0
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,8 +200,40 @@ fun IngredientRow(ingredient: Ingredient, color: Color, onAdd: (Ingredient) -> U
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = ingredient.name, fontSize = 16.sp, color = Color.Black)
-        IconButton(onClick = { onAdd(ingredient) }) {
-            Icon(Icons.Default.Add, contentDescription = "Add", tint = color)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {
+                    if (quantity > 0) ingredientQuantities[ingredient] = quantity - 1
+                },
+                enabled = quantity > 0
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Decrease",
+                    tint = if (quantity > 0) color else Color.Gray
+                )
+            }
+
+            Text(
+                text = quantity.toString(),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            IconButton(
+                onClick = {
+                    ingredientQuantities[ingredient] = quantity + 1
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Increase",
+                    tint = color
+                )
+            }
         }
     }
 }
