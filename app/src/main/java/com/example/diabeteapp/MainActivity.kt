@@ -116,7 +116,14 @@ class MainActivity : ComponentActivity() {
                         composable<UserProfilePage> {
                             UserProfilePageScreen(navController)
                         }
-
+                        composable<MealSelectionPage> {
+                            MealSelectionScreen(navController)
+                        }
+                        composable<FoodRegistrationWithMealPage> { backStackEntry ->
+                            val mealTypeString = backStackEntry.arguments?.getString("mealType") ?: "BREAKFAST"
+                            val mealType = MealType.fromString(mealTypeString)
+                            FoodPageScreenWithMeal(mealType, navController)
+                        }
                     }
                 }
         }
@@ -188,7 +195,7 @@ fun BottomBar(navController: NavController){
                 ImageType(R.drawable.apple)
             },
             selected = false,
-            onClick = { navController.navigate(FoodRegistrationPage()) })
+            onClick = { navController.navigate(MealSelectionPage()) })
         NavigationBarItem(
             icon = {
                 ImageType(R.drawable.lumous)
