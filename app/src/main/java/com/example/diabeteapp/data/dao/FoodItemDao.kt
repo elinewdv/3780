@@ -1,19 +1,17 @@
-package com.example.diabeteapp.data.dao
-
-import androidx.room.*
-import com.example.diabeteapp.FoodItem
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface FoodItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFoodItem(item: FoodItem)
-
-    @Query("SELECT * FROM food_items")
-    suspend fun getAllFoodItems(): List<FoodItem>
+    suspend fun insert(foodItem: FoodItem)
 
     @Query("SELECT * FROM food_items WHERE foodId = :id")
-    suspend fun getFoodItemById(id: String): FoodItem?
+    suspend fun getById(id: String): FoodItem?
 
-    @Delete
-    suspend fun deleteFoodItem(item: FoodItem)
+    // Recherche par nom (pour l'UI)
+    @Query("SELECT * FROM food_items WHERE name LIKE '%' || :query || '%'")
+    suspend fun searchByName(query: String): List<FoodItem>
 }

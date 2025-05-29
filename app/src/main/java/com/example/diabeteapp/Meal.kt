@@ -1,10 +1,11 @@
-package com.example.diabeteapp
-
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
 
 @Entity(tableName = "meals")
 data class Meal(
-    @PrimaryKey val mealId: String,
-    val dateTime: String // ou `Date` + TypeConverter
+    @PrimaryKey(autoGenerate = true) val mealId: Long = 0,
+    val name: String,
+    val timestamp: LocalDateTime,
+    val userId: Long // Lié à l'utilisateur
 )

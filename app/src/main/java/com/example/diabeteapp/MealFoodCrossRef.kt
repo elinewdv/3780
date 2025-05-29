@@ -8,5 +8,6 @@ import androidx.room.Entity
 )
 data class MealFoodCrossRef(
     val mealId: String,
-    val foodId: String
+    val foodId: String,
+    val portionSizeG: Float // Portion réelle consommée dans ce repas
 )
