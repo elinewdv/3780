@@ -14,6 +14,7 @@ activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 adaptiveAndroid = "1.1.0"
 loggingInterceptor = "4.11.0"
+materialIconsExtended = "<version>"
 moshi = "1.14.0"
 moshiKotlin = "1.15.0"
 moshiKotlinCodegen = "1.14.0"
@@ -29,6 +30,7 @@ roomVersion = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-compiler-v271 = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }

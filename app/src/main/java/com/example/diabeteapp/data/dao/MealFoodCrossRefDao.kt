@@ -1,16 +1,25 @@
-package com.example.diabeteapp.data.dao
+    package com.example.diabeteapp.data.dao
 
-import androidx.room.*
-import MealFoodCrossRef
+    import MealFoodCrossRef
+    import androidx.room.*
 
-@Dao
-interface MealFoodCrossRefDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMealFoodCrossRef(crossRef: MealFoodCrossRef)
+    @Dao
+    interface MealFoodCrossRefDao {
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun insertCrossRef(crossRef: MealFoodCrossRef)
 
-    //@Query("SELECT * FROM meal_food_cross_ref WHERE mealId = :mealId")
-    //suspend fun getCrossRefsForMeal(mealId: String): List<MealFoodCrossRef>
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun insertAll(crossRefs: List<MealFoodCrossRef>)
 
-    @Delete
-    suspend fun deleteMealFoodCrossRef(crossRef: MealFoodCrossRef)
-}
+        @Query("SELECT * FROM MealFoodCrossRef WHERE mealId = :mealId")
+        suspend fun getFoodsByMealId(mealId: Long): List<MealFoodCrossRef>
+
+        @Query("SELECT * FROM MealFoodCrossRef WHERE foodId = :foodId")
+        suspend fun getMealsByFoodId(foodId: String): List<MealFoodCrossRef>
+
+        @Delete
+        suspend fun delete(crossRef: MealFoodCrossRef)
+
+        @Query("DELETE FROM MealFoodCrossRef WHERE mealId = :mealId")
+        suspend fun deleteByMealId(mealId: Long)
+    }

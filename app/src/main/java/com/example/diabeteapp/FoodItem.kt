@@ -1,12 +1,13 @@
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 @Entity(tableName = "food_items")
 data class FoodItem(
     @PrimaryKey val foodId: String,
     val name: String,
-    val latinName: String?,
-    val foodGroupId: String?,
+    val latinName: String,
+    val foodGroupId: String,
 
     // Portions
     val defaultPortionG: Float = 100f, // 100g par défaut

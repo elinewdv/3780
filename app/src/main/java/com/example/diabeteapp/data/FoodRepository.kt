@@ -1,3 +1,7 @@
+package com.example.diabeteapp.data
+
+import FoodItem
+import FoodItemDao
 import com.example.diabeteapp.data.api.FoodApiService
 import com.example.diabeteapp.data.api.toFoodItem
 

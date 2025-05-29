@@ -7,14 +7,14 @@ data class ApiFoodResponse(
 data class ApiFood(
     val foodId: String,
     val foodName: String,
-    val latinName: String?,
+    val latinName: String,
     val calories: NutrientEntry,
     val energy: NutrientEntry,
     val constituents: List<NutrientConstituent>,
     val portions: List<Portion>,
     val ediblePart: EdiblePart,
-    val uri: String?,
-    val foodGroupId: String?
+    val uri: String,
+    val foodGroupId: String
 )
 
 data class NutrientEntry(
@@ -24,8 +24,8 @@ data class NutrientEntry(
 
 data class NutrientConstituent(
     val nutrientId: String,
-    val quantity: Float?,
-    val unit: String?
+    val quantity: Float,
+    val unit: String
 )
 
 data class Portion(

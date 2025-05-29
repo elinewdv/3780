@@ -1,5 +1,6 @@
 package com.example.diabeteapp
 
+import FoodViewModelFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -102,8 +105,16 @@ class MainActivity : ComponentActivity() {
                         composable<TargetPage> {
                             TargetPageScreen()
                         }
-                        composable<FoodRegistrationPage> {
-                            FoodPageScreen()
+                        //composable("food_registration") {
+                        composable<FoodRegistrationPage> { // <--- MODIFIEZ CECI
+                            val viewModel: FoodViewModel = viewModel(
+                                factory = FoodViewModelFactory(application)
+                            )
+                            FoodRegistrationScreen(
+                                viewModel = viewModel,
+                                userId = 1L, // Valeur fictive pour les tests
+                                onNavigateBack = { navController.popBackStack() }
+                            )
                         }
                         composable<AdvisePage> {
                             AdvisePageScreen()
@@ -214,4 +225,5 @@ fun ImageType(logoName: Int) {
 @Composable
 fun principalPages(currentDestination: NavDestination?): Boolean {
     return currentDestination?.hasRoute<HomePage>() == true || currentDestination?.hasRoute<SignPage>() == true || currentDestination?.hasRoute<UserProfilePage>() == true || currentDestination?.hasRoute<SignInPage>() == true || currentDestination?.hasRoute<SignUpPage>() == true
+
 }

@@ -89,4 +89,5 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.moshi.kotlin)
+    implementation(libs.androidx.material.icons.extended)
 }
