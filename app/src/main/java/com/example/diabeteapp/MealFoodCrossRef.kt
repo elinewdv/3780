@@ -1,13 +1,8 @@
-package com.example.diabeteapp
-
 import androidx.room.Entity
 
-@Entity(
-    tableName = "meal_food_cross_ref",
-    primaryKeys = ["mealId", "foodId"]
-)
+@Entity(primaryKeys = ["mealId", "foodId"])
 data class MealFoodCrossRef(
-    val mealId: String,
+    val mealId: Long,
     val foodId: String,
-    val portionSizeG: Float // Portion réelle consommée dans ce repas
+    val customPortionG: Float? = null // Optionnel: surcharge de portion
 )

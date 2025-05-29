@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.9.25"
-    id("com.google.devtools.ksp") version "1.9.25-1.0.20"
+    kotlin("plugin.serialization") version "2.1.21"
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.21"
 }
 
 android {
@@ -53,7 +53,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -74,11 +74,19 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    implementation("com.squareup.moshi:moshi:1.14.0")
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.moshi.v1150)
+    implementation(libs.gson)
+    ksp(libs.moshi.kotlin.codegen.v1150)
+    implementation(libs.androidx.room.runtime.v271)
+    implementation(libs.androidx.room.ktx.v271)
+    ksp(libs.androidx.room.compiler.v271)
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.moshi.kotlin)
 }

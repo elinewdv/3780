@@ -1,7 +1,8 @@
 package com.example.diabeteapp.data.dao
 
+import Meal
 import androidx.room.*
-import com.example.diabeteapp.Meal
+
 
 @Dao
 interface MealDao {

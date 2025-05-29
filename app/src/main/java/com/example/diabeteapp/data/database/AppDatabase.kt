@@ -2,6 +2,7 @@ package com.example.diabeteapp.data.database
 import FoodItem
 import FoodItemDao
 import Meal
+import MealFoodCrossRef
 import com.example.diabeteapp.data.Converters
 import androidx.room.Database
 import androidx.room.Room
