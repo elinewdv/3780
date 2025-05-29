@@ -1,7 +1,7 @@
 import com.example.diabeteapp.data.api.FoodApiService
 import com.example.diabeteapp.data.api.toFoodItem
 
-// data/repository/FoodRepository.kt
+
 class FoodRepository(
     private val foodItemDao: FoodItemDao,
     private val apiService: FoodApiService // Remplacez YourApiService par FoodApiService
