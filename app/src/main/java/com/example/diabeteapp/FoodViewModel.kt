@@ -1,4 +1,5 @@
 package com.example.diabeteapp
+
 import FoodItem
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +11,10 @@ import Meal
 import com.example.diabeteapp.data.dao.MealDao
 import com.example.diabeteapp.data.dao.MealFoodCrossRefDao
 import MealFoodCrossRef
+import android.util.Log
 import com.example.diabeteapp.data.FoodRepository
+import com.example.diabeteapp.data.api.ApiFoodResponse
+import com.example.diabeteapp.data.api.toFoodItem
 
 class FoodViewModel(
     private val foodRepository: FoodRepository,
@@ -43,11 +47,42 @@ class FoodViewModel(
     private val _saveSuccess = MutableStateFlow<Boolean?>(null)
     val saveSuccess: StateFlow<Boolean?> = _saveSuccess.asStateFlow()
 
+    // État pour le test API
+    private val _apiTestResult = MutableStateFlow<String?>(null)
+    val apiTestResult: StateFlow<String?> = _apiTestResult.asStateFlow()
+
     init {
         // Calcul automatique des nutriments quand les aliments sélectionnés changent
         viewModelScope.launch {
             _selectedFoods.collect { foods ->
                 _nutritionSummary.value = calculateNutritionSummary(foods)
+            }
+        }
+    }
+
+    // Fonction de test API
+    fun manualApiTest() {
+        viewModelScope.launch {
+            try {
+                _isSearching.value = true
+                _apiTestResult.value = "Test API en cours..."
+
+                val response = foodRepository.forceApiCall()
+                val foodCount = response.foods.size
+
+                _apiTestResult.value = "Succès: $foodCount aliments chargés"
+                Log.d("API_TEST", "Réponse API: $foodCount aliments")
+
+                // Sauvegarder les aliments en local via le repository
+                val foodItems = response.foods.map { it.toFoodItem() }
+                foodRepository.insertFoodItems(foodItems) // Utilisez le repository au lieu du DAO directement
+
+            } catch (e: Exception) {
+                val errorMsg = "Erreur API: ${e.message}"
+                _apiTestResult.value = errorMsg
+                Log.e("API_TEST", errorMsg, e)
+            } finally {
+                _isSearching.value = false
             }
         }
     }
@@ -61,17 +96,23 @@ class FoodViewModel(
         viewModelScope.launch {
             try {
                 _isSearching.value = true
-                val results = foodRepository.searchAndSaveFoods(query)
-                _searchResults.value = results
+                val localResults = foodRepository.searchLocally(query)
+                if (localResults.isNotEmpty()) {
+                    _searchResults.value = localResults
+                } else {
+                    val apiResults = foodRepository.searchAndSaveFoods(query)
+                    _searchResults.value = apiResults
+                }
             } catch (e: Exception) {
-                // Handle error - vous pouvez ajouter un état d'erreur si nécessaire
                 _searchResults.value = emptyList()
+                _apiTestResult.value = "Erreur recherche: ${e.message}"
             } finally {
                 _isSearching.value = false
             }
         }
     }
 
+    // ... [le reste des fonctions existantes reste inchangé] ...
     fun addFoodToMeal(foodItem: FoodItem, portionG: Float = 100f) {
         val updatedFoodItem = foodItem.copy(selectedPortionG = portionG)
         val currentFoods = _selectedFoods.value.toMutableMap()
@@ -93,8 +134,8 @@ class FoodViewModel(
 
         val updatedFoodItem = foodItem.copy(selectedPortionG = newPortionG)
         val currentFoods = _selectedFoods.value.toMutableMap()
-        currentFoods.remove(foodItem) // Remove old entry
-        currentFoods[updatedFoodItem] = newPortionG // Add updated entry
+        currentFoods.remove(foodItem)
+        currentFoods[updatedFoodItem] = newPortionG
         _selectedFoods.value = currentFoods
     }
 
@@ -106,21 +147,13 @@ class FoodViewModel(
         viewModelScope.launch {
             try {
                 _isSaving.value = true
-
-                // Créer le repas
                 val meal = Meal(
                     name = _mealName.value.ifEmpty { "Repas du ${java.time.LocalDateTime.now()}" },
                     userId = userId
                 )
-
-                // Insérer le repas et récupérer l'ID
                 mealDao.insertMeal(meal)
-
-                // Récupérer le repas inséré pour avoir l'ID généré
                 val savedMeal = mealDao.getAllMeals().lastOrNull { it.name == meal.name && it.userId == userId }
-
                 savedMeal?.let { mealWithId ->
-                    // Créer les relations aliment-repas
                     _selectedFoods.value.forEach { (foodItem, portionG) ->
                         val crossRef = MealFoodCrossRef(
                             mealId = mealWithId.mealId,
@@ -130,10 +163,8 @@ class FoodViewModel(
                         mealFoodCrossRefDao.insertCrossRef(crossRef)
                     }
                 }
-
                 _saveSuccess.value = true
                 clearMeal()
-
             } catch (e: Exception) {
                 _saveSuccess.value = false
             } finally {
@@ -185,4 +216,3 @@ data class NutritionSummary(
     val totalCarbohydrates: Float = 0f,
     val totalFiber: Float = 0f
 )
-

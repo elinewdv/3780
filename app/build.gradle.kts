@@ -78,6 +78,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.moshi.v1150)
+    ksp(libs.moshi.kotlin.codegen.v1150)
     implementation(libs.gson)
     ksp(libs.moshi.kotlin.codegen.v1150)
     implementation(libs.androidx.room.runtime.v271)
@@ -90,4 +91,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.moshi.kotlin)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.okhttp.v493)
+    implementation(libs.logging.interceptor.v493)
+    implementation (libs.moshi.kotlin.v1130)
 }
