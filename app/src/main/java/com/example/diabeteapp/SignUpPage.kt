@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SignUpPageScreen(navController: NavHostController) {
     var name by remember { mutableStateOf("") }
@@ -62,10 +62,35 @@ fun SignUpPageScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Age Group Input
-        Text("Age",color=color)
+        Text("Age Group", color = color)
         Spacer(modifier = Modifier.height(5.dp))
-        InputField(value = ageGroup, onValueChange = { ageGroup = it }, label = "Age group", placeholder = "../../..")
+
+        val ageGroups = listOf(
+            "10-20", "20-30", "30-40", "40-50",
+            "50-60", "60-70", "70-80", "80-90", "90-100"
+        )
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ageGroups.forEach { group ->
+                FilterChip(
+                    selected = ageGroup == group,
+                    onClick = { ageGroup = group },
+                    label = {
+                        Text(group, color = Color.White)
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = color,
+                        containerColor = color,
+                        labelColor = Color.White
+                    )
+                )
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -110,7 +135,7 @@ fun SignUpPageScreen(navController: NavHostController) {
                     allUsers.forEach {
                         println("User: ${it.username}, Email: ${it.email},  Password: ${it.password}")
                     }
-                    navController.navigate(TargetPage)
+                    navController.navigate(SignInPage)
                 }
 
             }} ,

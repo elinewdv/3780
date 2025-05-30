@@ -25,7 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 @Composable
 fun FoodRegistrationScreen(
     viewModel: FoodViewModel,
-    userId: Long,
+    userId: String,
     onNavigateBack: () -> Unit = {}
 ) {
     val color = Color(0xFF2264FF)

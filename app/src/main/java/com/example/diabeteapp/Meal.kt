@@ -6,5 +6,6 @@ import java.time.LocalDateTime
 data class Meal(
     @PrimaryKey(autoGenerate = true) val mealId: Long = 0,
     val name: String,
-    val userId: Long
+    val date: LocalDateTime = LocalDateTime.now(),
+    val userId: String
 )

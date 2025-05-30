@@ -9,7 +9,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.diabeteapp.*
-import com.example.diabeteapp.data.PortionConverter
+
 import com.example.diabeteapp.data.dao.*
 import android.content.Context
 
@@ -23,11 +23,10 @@ import android.content.Context
         UserMealCrossRef::class,
         MealFoodCrossRef::class
     ],
-    version = 2
+    version = 3
 )
 @TypeConverters(
     Converters::class,
-    PortionConverter::class // Ajouté ici
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

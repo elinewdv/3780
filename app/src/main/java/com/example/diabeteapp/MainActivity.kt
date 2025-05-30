@@ -39,8 +39,8 @@ import com.example.diabeteapp.ui.theme.DiabeteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-
-
+import androidx.compose.material.icons.filled.ArrowBack
+@Serializable object MealHistoryPage
 @Serializable object SignPage
 @Serializable object SignInPage
 @Serializable object SignUpPage
@@ -162,11 +162,24 @@ class MainActivity : ComponentActivity() {
                         composable<TargetPage> {
                             TargetPageScreen()
                         }
+                        composable<MealHistoryPage> {
+                            if (isLoggedIn) {
+                                MealHistoryScreen(
+                                    viewModel = viewModel,
+                                    userId = sessionManager.getCurrentUserId() ?: "",
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            } else {
+                                navController.navigate(SignPage) {
+                                    popUpTo(0)
+                                }
+                            }
+                        }
                         composable<FoodRegistrationPage> {
                             if (isLoggedIn) {
                                 FoodRegistrationScreen(
                                     viewModel = viewModel,
-                                    userId = sessionManager.getCurrentUserId()?.toLongOrNull() ?: 0L,
+                                    userId = sessionManager.getCurrentUserId() ?: "",
                                     onNavigateBack = { navController.popBackStack() }
                                 )
                             } else {
@@ -253,6 +266,11 @@ fun BottomBar(navController: NavController) {
             icon = { ImageType(R.drawable.apple) },
             selected = false,
             onClick = { navController.navigate(FoodRegistrationPage) }
+        )
+        NavigationBarItem(
+            icon = { ImageType(R.drawable.logo_blue) }, // Ajouter une icône d'historique dans vos ressources
+            selected = false,
+            onClick = { navController.navigate(MealHistoryPage) }
         )
         NavigationBarItem(
             icon = { ImageType(R.drawable.lumous) },

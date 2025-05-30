@@ -13,13 +13,12 @@ import com.example.diabeteapp.data.dao.MealFoodCrossRefDao
 import MealFoodCrossRef
 import android.util.Log
 import com.example.diabeteapp.data.FoodRepository
-import com.example.diabeteapp.data.api.ApiFoodResponse
 import com.example.diabeteapp.data.api.toFoodItem
 
 class FoodViewModel(
     private val foodRepository: FoodRepository,
     private val mealDao: MealDao,
-    private val mealFoodCrossRefDao: MealFoodCrossRefDao
+    private val mealFoodCrossRefDao: MealFoodCrossRefDao,
 ) : ViewModel() {
 
     // État de recherche des aliments
@@ -51,6 +50,9 @@ class FoodViewModel(
     private val _apiTestResult = MutableStateFlow<String?>(null)
     val apiTestResult: StateFlow<String?> = _apiTestResult.asStateFlow()
 
+    private val _userMeals = MutableStateFlow<List<Meal>>(emptyList())
+    val userMeals: StateFlow<List<Meal>> = _userMeals.asStateFlow()
+
     init {
         // Calcul automatique des nutriments quand les aliments sélectionnés changent
         viewModelScope.launch {
@@ -60,6 +62,11 @@ class FoodViewModel(
         }
     }
 
+    fun loadUserMeals(userId: String) {
+        viewModelScope.launch {
+            _userMeals.value = mealDao.getMealsByUser(userId)
+        }
+    }
     // Fonction de test API
     fun manualApiTest() {
         viewModelScope.launch {
@@ -143,7 +150,7 @@ class FoodViewModel(
         _mealName.value = name
     }
 
-    fun saveMeal(userId: Long) {
+    fun saveMeal(userId: String) {
         viewModelScope.launch {
             try {
                 _isSaving.value = true
@@ -151,20 +158,21 @@ class FoodViewModel(
                     name = _mealName.value.ifEmpty { "Repas du ${java.time.LocalDateTime.now()}" },
                     userId = userId
                 )
-                mealDao.insertMeal(meal)
-                val savedMeal = mealDao.getAllMeals().lastOrNull { it.name == meal.name && it.userId == userId }
-                savedMeal?.let { mealWithId ->
-                    _selectedFoods.value.forEach { (foodItem, portionG) ->
-                        val crossRef = MealFoodCrossRef(
-                            mealId = mealWithId.mealId,
-                            foodId = foodItem.foodId,
-                            customPortionG = portionG
-                        )
-                        mealFoodCrossRefDao.insertCrossRef(crossRef)
-                    }
+
+                val mealId = mealDao.insertMeal(meal)
+
+                _selectedFoods.value.forEach { (foodItem, portionG) ->
+                    val crossRef = MealFoodCrossRef(
+                        mealId = mealId,
+                        foodId = foodItem.foodId,
+                        customPortionG = portionG
+                    )
+                    mealFoodCrossRefDao.insertCrossRef(crossRef)
                 }
+
                 _saveSuccess.value = true
                 clearMeal()
+                loadUserMeals(userId) // Recharger l'historique après sauvegarde
             } catch (e: Exception) {
                 _saveSuccess.value = false
             } finally {
