@@ -10,12 +10,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.diabeteapp.data.database.AppDatabase
+import kotlinx.coroutines.launch
+import java.util.UUID
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +34,9 @@ fun SignUpPageScreen(navController: NavHostController) {
     var confirmPassword by remember { mutableStateOf("") }
 
     var color = Color(0xFF2264FF)
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -82,7 +92,28 @@ fun SignUpPageScreen(navController: NavHostController) {
 
         // Next Button
         Button(
-            onClick = { navController.navigate(TargetPage()) },
+            onClick = { if (password==confirmPassword){
+                val db = AppDatabase.getDatabase(context)
+                val hashedPassword = PasswordHasher.hashPassword(password)
+                val user = User(
+                    userId = UUID.randomUUID().toString(),
+                    email = email,
+                    username = name,
+                    password = hashedPassword,
+                    age = ageGroup,
+                    diabetesType = ""
+                )
+
+                scope.launch {
+                    db.userDao().insertUser(user)
+                    val allUsers = db.userDao().getAllUsers()
+                    allUsers.forEach {
+                        println("User: ${it.username}, Email: ${it.email},  Password: ${it.password}")
+                    }
+                    navController.navigate(TargetPage)
+                }
+
+            }} ,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -92,7 +123,6 @@ fun SignUpPageScreen(navController: NavHostController) {
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,5 +153,5 @@ fun InputField(
             focusedLabelColor = Color.White
         ),
         textStyle = LocalTextStyle.current.copy(color = Color.White)
-    )
+        )
 }

@@ -1,18 +1,13 @@
 package com.example.diabeteapp
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
@@ -20,26 +15,38 @@ import androidx.navigation.NavHostController
 fun SignPageScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
-            .fillMaxSize()  // Remplit tout l'écran
+            .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally  // Centre horizontalement les éléments
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ImageType(R.drawable.logo)
-        Spacer(modifier = Modifier.height(5.dp))
-        ButtonSign("Sign In",navController) { navController.navigate(SignInPage()) }
-        Spacer(modifier = Modifier.height(5.dp))
-        ButtonSign("Sign up", navController) { navController.navigate(SignUpPage()) }
-    }
-}
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "App Logo",
+            modifier = Modifier.size(80.dp)
+        )
 
+        Spacer(modifier = Modifier.height(20.dp))
 
-@Composable
-fun ButtonSign(text: String, navController: NavHostController, function: () -> Unit){
-    Button(onClick = function,
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
-    ) {
-        Text(text = text, color = Color.White)
+        // Sign In Button
+        Button(
+            onClick = { navController.navigate(SignInPage) },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Sign In", color = Color.White)
+        }
 
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Sign Up Button
+        Button(
+            onClick = { navController.navigate(SignUpPage) },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Sign Up", color = Color.White)
+        }
     }
 }

@@ -96,4 +96,5 @@ dependencies {
     implementation(libs.okhttp.v493)
     implementation(libs.logging.interceptor.v493)
     implementation (libs.moshi.kotlin.v1130)
+    implementation(libs.bcrypt)
 }

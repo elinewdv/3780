@@ -13,7 +13,9 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "diabeteapp-database"
-            ).build()
+            )
+                .fallbackToDestructiveMigration(false) // Ajouté pour le développement
+                .build()
             INSTANCE = instance
             instance
         }

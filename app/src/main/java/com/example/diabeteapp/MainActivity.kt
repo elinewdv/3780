@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -49,22 +48,20 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.diabeteapp.data.FoodRepository
 import com.example.diabeteapp.data.api.RetrofitInstance
-import com.example.diabeteapp.data.dao.MealDao
-import com.example.diabeteapp.data.dao.MealFoodCrossRefDao
 import com.example.diabeteapp.data.database.DatabaseProvider
 import com.example.diabeteapp.ui.theme.DiabeteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
-@Serializable class SignPage
-@Serializable class SignInPage
-@Serializable class SignUpPage
-@Serializable class HomePage
-@Serializable class TargetPage
-@Serializable class FoodRegistrationPage
-@Serializable class AdvisePage
-@Serializable class UserProfilePage
+@Serializable object SignPage
+@Serializable object SignInPage
+@Serializable object SignUpPage
+@Serializable object HomePage
+@Serializable object TargetPage
+@Serializable object FoodRegistrationPage
+@Serializable object AdvisePage
+@Serializable object UserProfilePage
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: FoodViewModel
@@ -92,7 +89,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DiabeteAppTheme {
-                val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
@@ -109,26 +105,51 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                // Fonction pour gérer les changements d'authentification
+                val onAuthChange: (Boolean) -> Unit = { isAuthenticated ->
+                    if (isAuthenticated) {
+                        navController.navigate(HomePage) {
+                            popUpTo(SignPage) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(SignPage) {
+                            popUpTo(HomePage) { inclusive = true }
+                        }
+                    }
+                }
+
                 Scaffold(
                     topBar = {
-                        if (!principalPages(currentDestination)) {
+                        if (!isPrincipalPage(currentDestination)) {
                             TopBar(navController)
                         }
                     },
                     bottomBar = {
-                        if (!principalPages(currentDestination)) {
+                        if (!isPrincipalPage(currentDestination)) {
                             BottomBar(navController)
                         }
                     }
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = HomePage(),
+                        startDestination = HomePage,
                         modifier = Modifier.padding(innerPadding),
                     ) {
-                        composable<SignPage> { SignPageScreen(navController) }
-                        composable<HomePage> { HomePageScreen(navController) }
-                        composable<TargetPage> { TargetPageScreen() }
+                        composable<SignPage> {
+                            SignPageScreen(navController)
+                        }
+                        composable<SignInPage> {
+                            SignInPageScreen(navController, onAuthChange)
+                        }
+                        composable<SignUpPage> {
+                            SignUpPageScreen(navController)
+                        }
+                        composable<HomePage> {
+                            HomePageScreen(navController)
+                        }
+                        composable<TargetPage> {
+                            TargetPageScreen()
+                        }
                         composable<FoodRegistrationPage> {
                             FoodRegistrationScreen(
                                 viewModel = viewModel,
@@ -136,10 +157,12 @@ class MainActivity : ComponentActivity() {
                                 onNavigateBack = { navController.popBackStack() }
                             )
                         }
-                        composable<AdvisePage> { AdvisePageScreen() }
-                        composable<SignInPage> { SignInPageScreen(navController) }
-                        composable<SignUpPage> { SignUpPageScreen(navController) }
-                        composable<UserProfilePage> { UserProfilePageScreen(navController) }
+                        composable<AdvisePage> {
+                            AdvisePageScreen()
+                        }
+                        composable<UserProfilePage> {
+                            UserProfilePageScreen(navController)
+                        }
                     }
                 }
             }
@@ -147,7 +170,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Vos autres composables restent inchangés...
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(navController: NavController) {
@@ -166,15 +188,15 @@ fun TopBar(navController: NavController) {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { navController.navigate(HomePage()) }) {
+            IconButton(onClick = { navController.navigate(HomePage) }) {
                 ImageType(R.drawable.logo_blue)
             }
         },
         actions = {
-            IconButton(onClick = { navController.navigate(UserProfilePage()) }) {
+            IconButton(onClick = { navController.navigate(UserProfilePage) }) {
                 Icon(
                     imageVector = Icons.Outlined.AccountCircle,
-                    contentDescription = "Home page",
+                    contentDescription = "Profile",
                     modifier = Modifier.size(28.dp),
                     tint = Color.White
                 )
@@ -193,17 +215,17 @@ fun BottomBar(navController: NavController) {
         NavigationBarItem(
             icon = { ImageType(R.drawable.target) },
             selected = false,
-            onClick = { navController.navigate(TargetPage()) }
+            onClick = { navController.navigate(TargetPage) }
         )
         NavigationBarItem(
             icon = { ImageType(R.drawable.apple) },
             selected = false,
-            onClick = { navController.navigate(FoodRegistrationPage()) }
+            onClick = { navController.navigate(FoodRegistrationPage) }
         )
         NavigationBarItem(
             icon = { ImageType(R.drawable.lumous) },
             selected = false,
-            onClick = { navController.navigate(AdvisePage()) }
+            onClick = { navController.navigate(AdvisePage) }
         )
     }
 }
@@ -212,7 +234,7 @@ fun BottomBar(navController: NavController) {
 fun ImageType(logoName: Int) {
     Image(
         painter = painterResource(logoName),
-        contentDescription = "Description de l'image",
+        contentDescription = "Image",
         modifier = Modifier
             .clip(CircleShape)
             .size(200.dp)
@@ -222,7 +244,7 @@ fun ImageType(logoName: Int) {
 }
 
 @Composable
-fun principalPages(currentDestination: NavDestination?): Boolean {
+fun isPrincipalPage(currentDestination: NavDestination?): Boolean {
     return currentDestination?.hasRoute<HomePage>() == true ||
             currentDestination?.hasRoute<SignPage>() == true ||
             currentDestination?.hasRoute<UserProfilePage>() == true ||

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+bcrypt = "0.9.0"
 converterMoshi = "2.9.0"
 gson = "2.10.1"
 kotlin = "2.1.21"
@@ -40,6 +41,7 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVers
 androidx-room-ktx-v271 = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 androidx-room-runtime-v271 = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

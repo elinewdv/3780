@@ -94,7 +94,7 @@ fun UserProfilePageScreen(navController: NavHostController) {
 
         // Confirm Button
         Button(
-            onClick = { navController.navigate(TargetPage()) },
+            onClick = { navController.navigate(TargetPage) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
