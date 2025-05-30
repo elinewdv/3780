@@ -97,4 +97,9 @@ dependencies {
     implementation(libs.logging.interceptor.v493)
     implementation (libs.moshi.kotlin.v1130)
     implementation(libs.bcrypt)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.4")
 }
