@@ -14,7 +14,7 @@ object DatabaseProvider {
                 AppDatabase::class.java,
                 "diabeteapp-database"
             )
-                .fallbackToDestructiveMigration(false) // Ajouté pour le développement
+                .fallbackToDestructiveMigration(true) // Ajouté pour le développement
                 .build()
             INSTANCE = instance
             instance

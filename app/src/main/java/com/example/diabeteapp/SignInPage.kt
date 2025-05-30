@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignInPageScreen(
     navController: NavHostController,
-    onAuthSuccess: (Boolean) -> Unit
+    onAuthSuccess: (Boolean) -> Unit,
+    sessionManager: SessionManager
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -53,7 +54,6 @@ fun SignInPageScreen(
             value = email,
             onValueChange = { email = it },
             label = "E-mail",
-            unit = "Email",
 
             )
 
@@ -64,7 +64,7 @@ fun SignInPageScreen(
             value = password,
             onValueChange = { password = it },
             label = "Password",
-            unit = "Password",
+
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -88,6 +88,7 @@ fun SignInPageScreen(
                             errorMessage = "Invalid password"
                         } else {
                             onAuthSuccess(true)
+                            sessionManager.createSession(user.userId)
                             navController.navigate(TargetPage) {
                                 popUpTo(SignPage) { inclusive = true }
                             }

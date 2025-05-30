@@ -23,7 +23,7 @@ import android.content.Context
         UserMealCrossRef::class,
         MealFoodCrossRef::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(
     Converters::class,
@@ -43,10 +43,12 @@ abstract class AppDatabase : RoomDatabase() {
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "diabete_database"
-                ).build()
+                                context.applicationContext,
+                                AppDatabase::class.java,
+                                "diabete_database"
+                ).fallbackToDestructiveMigration(true)
+                    .build()
+
                 INSTANCE = instance
                 instance
             }

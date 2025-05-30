@@ -10,5 +10,9 @@ data class User(
     val username: String,
     val password: String,
     val age: String,
-    val diabetesType: String
+    var diabetesType: String = "",
+    var height: String = "",
+    var weight: String = "",
+    var gender: String = "",
+    var isProfileComplete: Boolean = false
 )

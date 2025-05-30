@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomePageScreen(navController: NavHostController) {
+fun HomePageScreen(navController: NavHostController, sessionManager: SessionManager) {
     Column(
         modifier = Modifier
             .fillMaxSize()  // Remplit tout l'écran

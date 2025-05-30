@@ -7,26 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -54,6 +40,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
+
 @Serializable object SignPage
 @Serializable object SignInPage
 @Serializable object SignUpPage
@@ -65,12 +52,14 @@ import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: FoodViewModel
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         // Initialisation des dépendances
+        sessionManager = SessionManager(this)
         val foodRepository = FoodRepository(
             RetrofitInstance.apiService,
             DatabaseProvider.getDatabase(this).foodItemDao()
@@ -83,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
         // Lancement du test API après un court délai
         lifecycleScope.launch {
-            delay(2000) // Délai pour laisser l'UI s'initialiser
+            delay(2000)
             viewModel.manualApiTest()
         }
 
@@ -92,6 +81,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
+                val isLoggedIn by remember { mutableStateOf(sessionManager.isLoggedIn()) }
 
                 // Observer les résultats du test API
                 val apiTestResult by viewModel.apiTestResult.collectAsStateWithLifecycle()
@@ -105,15 +95,21 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Fonction pour gérer les changements d'authentification
-                val onAuthChange: (Boolean) -> Unit = { isAuthenticated ->
-                    if (isAuthenticated) {
-                        navController.navigate(HomePage) {
-                            popUpTo(SignPage) { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate(SignPage) {
-                            popUpTo(HomePage) { inclusive = true }
+                // Gestion de la navigation initiale
+                LaunchedEffect(isLoggedIn) {
+                    if (isLoggedIn) {
+                        val userId = sessionManager.getCurrentUserId()
+                        val db = DatabaseProvider.getDatabase(this@MainActivity)
+                        val user = userId?.let { db.userDao().getUserById(it) }
+
+                        if (user?.isProfileComplete == true) {
+                            navController.navigate(HomePage) {
+                                popUpTo(0)
+                            }
+                        } else {
+                            navController.navigate(UserProfilePage) {
+                                popUpTo(0)
+                            }
                         }
                     }
                 }
@@ -121,47 +117,75 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         if (!isPrincipalPage(currentDestination)) {
-                            TopBar(navController)
+                            TopBar(navController, sessionManager)
                         }
                     },
                     bottomBar = {
-                        if (!isPrincipalPage(currentDestination)) {
+                        if (!isPrincipalPage(currentDestination) && isLoggedIn) {
                             BottomBar(navController)
                         }
                     }
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = HomePage,
+                        startDestination = if (isLoggedIn) HomePage else SignPage,
                         modifier = Modifier.padding(innerPadding),
                     ) {
                         composable<SignPage> {
                             SignPageScreen(navController)
                         }
                         composable<SignInPage> {
-                            SignInPageScreen(navController, onAuthChange)
+                            SignInPageScreen(
+                                navController = navController,
+                                onAuthSuccess = { loggedIn ->
+                                    if (loggedIn) {
+                                        navController.navigate(TargetPage) {
+                                            popUpTo(SignPage) { inclusive = true }
+                                        }
+                                    }
+                                },
+                                sessionManager = sessionManager
+                            )
                         }
                         composable<SignUpPage> {
                             SignUpPageScreen(navController)
                         }
                         composable<HomePage> {
-                            HomePageScreen(navController)
+                            if (isLoggedIn) {
+                                HomePageScreen(navController, sessionManager)
+                            } else {
+                                navController.navigate(SignPage) {
+                                    popUpTo(0)
+                                }
+                            }
                         }
                         composable<TargetPage> {
                             TargetPageScreen()
                         }
                         composable<FoodRegistrationPage> {
-                            FoodRegistrationScreen(
-                                viewModel = viewModel,
-                                userId = 1L,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
+                            if (isLoggedIn) {
+                                FoodRegistrationScreen(
+                                    viewModel = viewModel,
+                                    userId = sessionManager.getCurrentUserId()?.toLongOrNull() ?: 0L,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            } else {
+                                navController.navigate(SignPage) {
+                                    popUpTo(0)
+                                }
+                            }
                         }
                         composable<AdvisePage> {
                             AdvisePageScreen()
                         }
                         composable<UserProfilePage> {
-                            UserProfilePageScreen(navController)
+                            if (isLoggedIn) {
+                                UserProfilePageScreen(navController, sessionManager)
+                            } else {
+                                navController.navigate(SignPage) {
+                                    popUpTo(0)
+                                }
+                            }
                         }
                     }
                 }
@@ -172,7 +196,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavController) {
+fun TopBar(navController: NavController, sessionManager: SessionManager) {
     TopAppBar(
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = Color(0xFF2264FF)
@@ -193,7 +217,13 @@ fun TopBar(navController: NavController) {
             }
         },
         actions = {
-            IconButton(onClick = { navController.navigate(UserProfilePage) }) {
+            IconButton(onClick = {
+                if (sessionManager.isLoggedIn()) {
+                    navController.navigate(UserProfilePage)
+                } else {
+                    navController.navigate(SignInPage)
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Outlined.AccountCircle,
                     contentDescription = "Profile",
@@ -204,6 +234,8 @@ fun TopBar(navController: NavController) {
         }
     )
 }
+
+// Les autres composables (BottomBar, ImageType, isPrincipalPage) restent inchangés
 
 @Composable
 fun BottomBar(navController: NavController) {
@@ -247,7 +279,6 @@ fun ImageType(logoName: Int) {
 fun isPrincipalPage(currentDestination: NavDestination?): Boolean {
     return currentDestination?.hasRoute<HomePage>() == true ||
             currentDestination?.hasRoute<SignPage>() == true ||
-            currentDestination?.hasRoute<UserProfilePage>() == true ||
             currentDestination?.hasRoute<SignInPage>() == true ||
             currentDestination?.hasRoute<SignUpPage>() == true
 }

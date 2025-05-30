@@ -1,3 +1,4 @@
+// UserDao.kt
 package com.example.diabeteapp.data.dao
 
 import androidx.room.*
@@ -19,4 +20,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE email = :email")
     suspend fun getUserByEmail(email: String): User?
+
+    @Update
+    suspend fun updateUser(user: User)
 }
