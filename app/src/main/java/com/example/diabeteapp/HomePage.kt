@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomePageScreen(navController: NavHostController) {
+fun HomePageScreen(navController: NavHostController, sessionManager: SessionManager) {
     Column(
         modifier = Modifier
             .fillMaxSize()  // Remplit tout l'écran
@@ -33,7 +33,7 @@ fun HomePageScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(5.dp))
         Text("Quote",color = Color(0xFF2264FF))
         Spacer(modifier = Modifier.height(25.dp))
-        Button(onClick = { navController.navigate(SignPage()) },
+        Button(onClick = { navController.navigate(SignPage) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
         ) {
             Text(text = "Next", color = Color.White)

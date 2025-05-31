@@ -10,14 +10,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.diabeteapp.data.database.AppDatabase
+import kotlinx.coroutines.launch
+import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SignUpPageScreen(navController: NavHostController) {
     var name by remember { mutableStateOf("") }
@@ -27,6 +34,9 @@ fun SignUpPageScreen(navController: NavHostController) {
     var confirmPassword by remember { mutableStateOf("") }
 
     var color = Color(0xFF2264FF)
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -52,10 +62,35 @@ fun SignUpPageScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Age Group Input
-        Text("Age",color=color)
+        Text("Age Group", color = color)
         Spacer(modifier = Modifier.height(5.dp))
-        InputField(value = ageGroup, onValueChange = { ageGroup = it }, label = "Age group", placeholder = "../../..")
+
+        val ageGroups = listOf(
+            "10-20", "20-30", "30-40", "40-50",
+            "50-60", "60-70", "70-80", "80-90", "90-100"
+        )
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ageGroups.forEach { group ->
+                FilterChip(
+                    selected = ageGroup == group,
+                    onClick = { ageGroup = group },
+                    label = {
+                        Text(group, color = Color.White)
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = color,
+                        containerColor = color,
+                        labelColor = Color.White
+                    )
+                )
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -82,18 +117,37 @@ fun SignUpPageScreen(navController: NavHostController) {
 
         // Next Button
         Button(
-            onClick = { navController.navigate("next_page") },
+            onClick = { if (password==confirmPassword){
+                val db = AppDatabase.getDatabase(context)
+                val hashedPassword = PasswordHasher.hashPassword(password)
+                val user = User(
+                    userId = UUID.randomUUID().toString(),
+                    email = email,
+                    username = name,
+                    password = hashedPassword,
+                    age = ageGroup,
+                    diabetesType = ""
+                )
+
+                scope.launch {
+                    db.userDao().insertUser(user)
+                    val allUsers = db.userDao().getAllUsers()
+                    allUsers.forEach {
+                        println("User: ${it.username}, Email: ${it.email},  Password: ${it.password}")
+                    }
+                    navController.navigate(SignInPage)
+                }
+
+            }} ,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = color)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))
         ) {
-            Text(text = "Next", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(text = "Confirm", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,5 +178,5 @@ fun InputField(
             focusedLabelColor = Color.White
         ),
         textStyle = LocalTextStyle.current.copy(color = Color.White)
-    )
+        )
 }
