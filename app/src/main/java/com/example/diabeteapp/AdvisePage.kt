@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -82,10 +83,10 @@ class ChatViewModel : ViewModel() {
 
         apiService = retrofit.create(CohereApiService::class.java)
 
-        // Add welcome message when chat starts
+        // Add welcome message with disclaimer when chat starts
         _messages.add(
             Message(
-                "Hello! I'm your diabetes management assistant. I can help you with:\n\n• Blood sugar tracking\n• Meal planning tips\n• Exercise suggestions\n• General diabetes education\n\nHow can I help you today?",
+                "Hello! I'm your diabetes management assistant. I can help you with:\n\n• Blood sugar tracking\n• Meal planning tips\n• Exercise suggestions\n• General diabetes education\n\n⚠️ IMPORTANT DISCLAIMER:\nI am an AI assistant and NOT a healthcare professional. The information I provide is for educational purposes only and should not replace professional medical advice. Always consult with your doctor or healthcare provider for medical decisions, emergencies, or concerns about your diabetes management.\n\nHow can I help you today?",
                 isUser = false
             )
         )
@@ -115,7 +116,7 @@ class ChatViewModel : ViewModel() {
                     )
                 }
 
-                // System prompt for diabetes assistant behavior
+                // System prompt for diabetes assistant behavior with enhanced disclaimer
                 val preamble = """You are a helpful diabetes management assistant. You can help users with:
 - Blood sugar tracking and understanding readings
 - Meal planning and carb counting tips
@@ -123,12 +124,16 @@ class ChatViewModel : ViewModel() {
 - Medication reminders
 - General diabetes education and support
 
-Important guidelines:
-- Always remind users you're not a replacement for medical advice
-- Encourage consulting healthcare providers for medical concerns
-- Be supportive and encouraging
+CRITICAL GUIDELINES:
+- You are NOT a healthcare professional and cannot provide medical advice
+- Always remind users that your information is for educational purposes only
+- Encourage consulting healthcare providers for all medical concerns and decisions
+- If asked about emergency symptoms, immediately advise seeking emergency medical attention
+- Be supportive and encouraging while maintaining clear boundaries
 - Keep responses concise and helpful
-- If asked about emergency symptoms, advise immediate medical attention"""
+- Include disclaimers when discussing medical topics
+- Never diagnose conditions or recommend specific medical treatments
+- Always end responses with a reminder to consult healthcare professionals when appropriate"""
 
                 // Create API request
                 val request = CohereRequest(
@@ -178,6 +183,8 @@ Important guidelines:
     }
 }
 
+
+
 // Main chat screen composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -198,13 +205,44 @@ fun AdvisePageScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Header
-        Text(
-            text = "Diabetes Assistant",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+        // Header with disclaimer reminder
+        Column(
             modifier = Modifier.padding(bottom = 16.dp)
-        )
+        ) {
+            Text(
+                text = "Diabetes Assistant",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            // Disclaimer banner
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = "Warning",
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "For educational purposes only. Not medical advice. Consult your healthcare provider.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
 
         // Messages list
         LazyColumn(
