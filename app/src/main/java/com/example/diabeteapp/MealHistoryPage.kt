@@ -30,17 +30,17 @@ fun MealHistoryScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         SmallTopAppBar(
-            title = { Text("Historique des repas") },
+            title = { Text("Previous Meals") },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                 }
             }
         )
 
         if (meals.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Aucun repas enregistré")
+                Text("No meal registered yet, Get started !")
             }
         } else {
             LazyColumn(
@@ -58,7 +58,7 @@ fun MealHistoryScreen(
         }
     }
 
-    // Afficher le dialogue quand un repas est sélectionné
+
     selectedMeal?.let { mealWithFoods ->
         MealDetailsDialog(
             mealWithFoods = mealWithFoods,

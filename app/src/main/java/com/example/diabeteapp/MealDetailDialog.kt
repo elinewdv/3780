@@ -1,94 +1,112 @@
 package com.example.diabeteapp
-import FoodItem
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.diabeteapp.data.dao.FoodWithPortion
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MealDetailsDialog(
     mealWithFoods: MealWithFoods,
     onDismiss: () -> Unit
 ) {
-    // Calcul des nutriments totaux
-    val (totalCalories, totalProteins, totalFats, totalCarbs) = remember(mealWithFoods) {
-        var calories = 0f
-        var proteins = 0f
-        var fats = 0f
-        var carbs = 0f
-
-        mealWithFoods.foods.forEach { (food, portion) ->
-            val factor = portion / 100f
-            calories += food.energyKcal * factor
-            proteins += food.proteins * factor
-            fats += food.fats * factor
-            carbs += food.carbohydrates * factor
-        }
-
-        Quadruple(calories, proteins, fats, carbs)
-    }
-
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(mealWithFoods.meal.name) },
+        title = {
+            Column {
+                Text(mealWithFoods.meal.name)
+                Text(
+                    text = mealWithFoods.meal.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        },
         text = {
             Column {
-                // Liste des aliments
-                Text("Aliments consommés:", fontWeight = FontWeight.Bold)
+                // Liste des aliments avec leurs portions
+                Text("Food:", fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                mealWithFoods.foods.forEach { foodWithPortion ->
-                    val food = foodWithPortion.foodItem
-                    val portion = foodWithPortion.customPortionG
-
+                mealWithFoods.foods.forEach { (food, portion) ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("- ${food.name}")
+                        Text("${portion.toInt()}g")
+                    }
+                    Text(
+                        text = "${(food.energyKcal * portion / 100).toInt()} kcal",
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
 
                 // Résumé nutritionnel
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Total nutritionnel:", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
+                Text("Nutritional Summary:", fontWeight = FontWeight.Bold)
 
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    NutritionInfo("Calories", "${totalCalories.toInt()} kcal")
-                    NutritionInfo("Protéines", "${totalProteins.toInt()}g")
-                }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    NutritionInfo("Glucides", "${totalCarbs.toInt()}g")
-                    NutritionInfo("Lipides", "${totalFats.toInt()}g")
-                }
+                val summary = calculateNutritionSummary(mealWithFoods.foods)
+                NutritionSummaryView(summary)
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text("Close")
             }
         }
     )
 }
 
+private fun calculateNutritionSummary(foods: List<FoodWithPortion>): NutritionSummary {
+    var totalCalories = 0f
+    var totalProteins = 0f
+    var totalFats = 0f
+    var totalCarbs = 0f
+
+    foods.forEach { (food, portion) ->
+        val factor = portion / 100f
+        totalCalories += food.energyKcal * factor
+        totalProteins += food.proteins * factor
+        totalFats += food.fats * factor
+        totalCarbs += food.carbohydrates * factor
+    }
+
+    return NutritionSummary(
+        totalCalories = totalCalories,
+        totalProteins = totalProteins,
+        totalFats = totalFats,
+        totalCarbohydrates = totalCarbs
+    )
+}
+
 @Composable
-private fun NutritionInfo(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, style = MaterialTheme.typography.bodySmall)
-        Text(value, fontWeight = FontWeight.Bold)
+fun NutritionSummaryView(summary: NutritionSummary) {
+    Column {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Calories:")
+            Text("${summary.totalCalories.toInt()} kcal", fontWeight = FontWeight.Bold)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Proteins:")
+            Text("${summary.totalProteins.toInt()}g", fontWeight = FontWeight.Bold)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Glides:")
+            Text("${summary.totalCarbohydrates.toInt()}g", fontWeight = FontWeight.Bold)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Lipids:")
+            Text("${summary.totalFats.toInt()}g", fontWeight = FontWeight.Bold)
+        }
     }
 }
 
-private data class Quadruple(
-    val first: Float,
-    val second: Float,
-    val third: Float,
-    val fourth: Float
-)
+
+

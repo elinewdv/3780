@@ -103,10 +103,11 @@ class FoodViewModel(
     fun loadMealDetails(mealId: Long, userId: String) {
         viewModelScope.launch {
             val meal = mealDao.getMealById(mealId, userId)
-            val foods = mealFoodCrossRefDao.getFoodsForMeal(mealId)
-
-            if (meal != null) {
+            if (meal != null && meal.userId == userId) {
+                val foods = mealFoodCrossRefDao.getFoodsForMeal(mealId)
                 _selectedMeal.value = MealWithFoods(meal, foods)
+            } else {
+                _selectedMeal.value = null
             }
         }
     }
@@ -139,7 +140,7 @@ class FoodViewModel(
         }
     }
 
-    // ... [le reste des fonctions existantes reste inchangé] ...
+
     fun addFoodToMeal(foodItem: FoodItem, portionG: Float = 100f) {
         val updatedFoodItem = foodItem.copy(selectedPortionG = portionG)
         val currentFoods = _selectedFoods.value.toMutableMap()
@@ -175,24 +176,25 @@ class FoodViewModel(
             try {
                 _isSaving.value = true
                 val meal = Meal(
-                    name = _mealName.value.ifEmpty { "Repas du ${java.time.LocalDateTime.now()}" },
+                    name = _mealName.value.ifEmpty { "Meal at ${java.time.LocalDateTime.now()}" },
                     userId = userId
                 )
 
                 val mealId = mealDao.insertMeal(meal)
 
-                _selectedFoods.value.forEach { (foodItem, portionG) ->
-                    val crossRef = MealFoodCrossRef(
-                        mealId = mealId,
-                        foodId = foodItem.foodId,
-                        customPortionG = portionG
+                _selectedFoods.value.forEach { (foodItem, portion) ->
+                    mealFoodCrossRefDao.insertCrossRef(
+                        MealFoodCrossRef(
+                            mealId = mealId,
+                            foodId = foodItem.foodId,
+                            customPortionG = portion
+                        )
                     )
-                    mealFoodCrossRefDao.insertCrossRef(crossRef)
                 }
 
                 _saveSuccess.value = true
-                clearMeal()
-                loadUserMeals(userId) // Recharger l'historique après sauvegarde
+                loadUserMeals(userId) // Recharge l'historique
+                clearMeal() // Ne clear que le repas en cours, pas la sélection
             } catch (e: Exception) {
                 _saveSuccess.value = false
             } finally {
