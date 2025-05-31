@@ -2,7 +2,6 @@ package com.example.diabeteapp.data.database
 import FoodItem
 import FoodItemDao
 import Meal
-import MealFoodCrossRef
 import com.example.diabeteapp.data.Converters
 import androidx.room.Database
 import androidx.room.Room
@@ -23,7 +22,8 @@ import android.content.Context
         UserMealCrossRef::class,
         MealFoodCrossRef::class
     ],
-    version = 3
+    version = 4
+
 )
 @TypeConverters(
     Converters::class,

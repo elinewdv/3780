@@ -1,25 +1,32 @@
-    package com.example.diabeteapp.data.dao
+package com.example.diabeteapp.data.dao
 
-    import MealFoodCrossRef
-    import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Embedded
+import FoodItem
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import com.example.diabeteapp.MealFoodCrossRef
 
-    @Dao
-    interface MealFoodCrossRefDao {
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertCrossRef(crossRef: MealFoodCrossRef)
+// Classe de données pour remplacer le Pair
+data class FoodWithPortion(
+    @Embedded val foodItem: FoodItem,
+    val customPortionG: Float
+)
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertAll(crossRefs: List<MealFoodCrossRef>)
+@Dao
+interface MealFoodCrossRefDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCrossRef(crossRef: MealFoodCrossRef)
 
-        @Query("SELECT * FROM MealFoodCrossRef WHERE mealId = :mealId")
-        suspend fun getFoodsByMealId(mealId: Long): List<MealFoodCrossRef>
+    @Query("DELETE FROM meal_food_cross_ref WHERE mealId = :mealId")
+    suspend fun deleteCrossRefsForMeal(mealId: Long)
 
-        @Query("SELECT * FROM MealFoodCrossRef WHERE foodId = :foodId")
-        suspend fun getMealsByFoodId(foodId: String): List<MealFoodCrossRef>
-
-        @Delete
-        suspend fun delete(crossRef: MealFoodCrossRef)
-
-        @Query("DELETE FROM MealFoodCrossRef WHERE mealId = :mealId")
-        suspend fun deleteByMealId(mealId: Long)
-    }
+    @Query("""
+        SELECT food_items.*, meal_food_cross_ref.customPortionG 
+        FROM meal_food_cross_ref
+        INNER JOIN food_items ON meal_food_cross_ref.foodId = food_items.foodId
+        WHERE meal_food_cross_ref.mealId = :mealId
+    """)
+    suspend fun getFoodsForMeal(mealId: Long): List<FoodWithPortion>
+}

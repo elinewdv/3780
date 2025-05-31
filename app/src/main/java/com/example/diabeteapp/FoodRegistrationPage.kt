@@ -60,7 +60,7 @@ fun FoodRegistrationScreen(
     ) {
         // En-tête
         Text(
-            text = "Créer un repas",
+            text = "Create a new meal",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = color,
@@ -71,7 +71,7 @@ fun FoodRegistrationScreen(
         OutlinedTextField(
             value = mealName,
             onValueChange = { viewModel.setMealName(it) },
-            label = { Text("Nom du repas (optionnel)") },
+            label = { Text("Give your Meal a name !") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -90,7 +90,7 @@ fun FoodRegistrationScreen(
                     searchQuery = it
                     viewModel.searchFoods(it)
                 },
-                label = { Text("Rechercher un aliment") },
+                label = { Text("Search for a food") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 },
@@ -128,7 +128,7 @@ fun FoodRegistrationScreen(
         // Résultats de recherche
         if (searchResults.isNotEmpty() && searchQuery.isNotBlank()) {
             Text(
-                text = "Résultats de recherche",
+                text = "Queries Results",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,
@@ -155,7 +155,7 @@ fun FoodRegistrationScreen(
         // Aliments sélectionnés
         if (selectedFoods.isNotEmpty()) {
             Text(
-                text = "Aliments dans le repas",
+                text = "Food in the meal",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,
@@ -189,7 +189,7 @@ fun FoodRegistrationScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Ajoutez des aliments à votre repas",
+                    text = "Add food to your meal !",
                     color = Color.Gray,
                     textAlign = TextAlign.Center
                 )
@@ -221,7 +221,7 @@ fun FoodRegistrationScreen(
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
-                text = if (isSaving) "Sauvegarde..." else "Enregistrer le repas",
+                text = if (isSaving) "Registering.." else "Register your meal !",
                 color = Color.White
             )
         }
@@ -231,8 +231,8 @@ fun FoodRegistrationScreen(
     showDeleteConfirmation?.let { foodToDelete ->
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = null },
-            title = { Text("Supprimer l'aliment") },
-            text = { Text("Voulez-vous vraiment supprimer ${foodToDelete.name} du repas ?") },
+            title = { Text("Delete Food ?") },
+            text = { Text("Are you sure you want to delete ${foodToDelete.name} from meal ?") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -240,12 +240,12 @@ fun FoodRegistrationScreen(
                         showDeleteConfirmation = null
                     }
                 ) {
-                    Text("Confirmer", color = Color.Red)
+                    Text("Confirm", color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmation = null }) {
-                    Text("Annuler", color = color)
+                    Text("Cancel", color = color)
                 }
             }
         )
@@ -311,7 +311,7 @@ private fun SearchResultItem(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = "Ajouter",
+                    contentDescription = "Add",
                     tint = color
                 )
             }
@@ -358,7 +358,7 @@ private fun SelectedFoodItem(
                 IconButton(onClick = onRemove) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Supprimer",
+                        contentDescription = "Delete",
                         tint = Color.Red
                     )
                 }
@@ -400,7 +400,7 @@ private fun NutritionPreview(
                 .padding(12.dp)
         ) {
             Text(
-                text = "Résumé nutritionnel",
+                text = "Nutritional summary",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,
@@ -445,7 +445,7 @@ private fun NutritionSummaryDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Repas enregistré avec succès !",
+                text = "Meal successfully registered !",
                 textAlign = TextAlign.Center,
                 color = Color(0xFF2264FF)
             )
@@ -453,7 +453,7 @@ private fun NutritionSummaryDialog(
         text = {
             Column {
                 Text(
-                    text = "Résumé nutritionnel du repas :",
+                    text = "Summary of the Meal :",
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -489,13 +489,13 @@ private fun CustomFoodDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Ajouter un aliment personnalisé", color = color) },
+        title = { Text("Add a personnalized food", color = color) },
         text = {
             Column {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nom de l'aliment*") },
+                    label = { Text("Name of the food*") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -525,7 +525,7 @@ private fun CustomFoodDialog(
                     OutlinedTextField(
                         value = proteins,
                         onValueChange = { proteins = it },
-                        label = { Text("Protéines (g)*") },
+                        label = { Text("Proteins (g)*") },
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
@@ -533,7 +533,7 @@ private fun CustomFoodDialog(
                     OutlinedTextField(
                         value = carbs,
                         onValueChange = { carbs = it },
-                        label = { Text("Glucides (g)*") },
+                        label = { Text("Glides (g)*") },
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
@@ -545,7 +545,7 @@ private fun CustomFoodDialog(
                     OutlinedTextField(
                         value = fats,
                         onValueChange = { fats = it },
-                        label = { Text("Lipides (g)*") },
+                        label = { Text("Lipids (g)*") },
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
@@ -590,12 +590,12 @@ private fun CustomFoodDialog(
                         fats.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = color)
             ) {
-                Text("Ajouter")
+                Text("Add")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Annuler", color = color)
+                Text("Cancel", color = color)
             }
         }
     )

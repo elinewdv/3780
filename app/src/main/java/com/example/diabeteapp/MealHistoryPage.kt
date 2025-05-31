@@ -26,27 +26,20 @@ fun MealHistoryScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val meals by viewModel.userMeals.collectAsStateWithLifecycle()
+    val selectedMeal by viewModel.selectedMeal.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header
         SmallTopAppBar(
             title = { Text("Historique des repas") },
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Retour"
-                    )
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
                 }
             }
         )
 
-        // Content
         if (meals.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Aucun repas enregistré")
             }
         } else {
@@ -56,19 +49,34 @@ fun MealHistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(meals) { meal ->
-                    MealHistoryItem(meal = meal)
+                    MealHistoryItem(
+                        meal = meal,
+                        onClick = { viewModel.loadMealDetails(meal.mealId, userId) }
+                    )
                 }
             }
         }
     }
+
+    // Afficher le dialogue quand un repas est sélectionné
+    selectedMeal?.let { mealWithFoods ->
+        MealDetailsDialog(
+            mealWithFoods = mealWithFoods,
+            onDismiss = { viewModel.clearSelectedMeal() }
+        )
+    }
 }
 
 @Composable
-fun MealHistoryItem(meal: Meal) {
+fun MealHistoryItem(
+    meal: Meal,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

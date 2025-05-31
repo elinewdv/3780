@@ -10,10 +10,13 @@ import kotlinx.coroutines.launch
 import Meal
 import com.example.diabeteapp.data.dao.MealDao
 import com.example.diabeteapp.data.dao.MealFoodCrossRefDao
-import MealFoodCrossRef
+
 import android.util.Log
 import com.example.diabeteapp.data.FoodRepository
 import com.example.diabeteapp.data.api.toFoodItem
+import com.example.diabeteapp.data.dao.FoodWithPortion
+
+
 
 class FoodViewModel(
     private val foodRepository: FoodRepository,
@@ -52,6 +55,9 @@ class FoodViewModel(
 
     private val _userMeals = MutableStateFlow<List<Meal>>(emptyList())
     val userMeals: StateFlow<List<Meal>> = _userMeals.asStateFlow()
+
+    private val _selectedMeal = MutableStateFlow<MealWithFoods?>(null)
+    val selectedMeal: StateFlow<MealWithFoods?> = _selectedMeal.asStateFlow()
 
     init {
         // Calcul automatique des nutriments quand les aliments sélectionnés changent
@@ -94,6 +100,20 @@ class FoodViewModel(
         }
     }
 
+    fun loadMealDetails(mealId: Long, userId: String) {
+        viewModelScope.launch {
+            val meal = mealDao.getMealById(mealId, userId)
+            val foods = mealFoodCrossRefDao.getFoodsForMeal(mealId)
+
+            if (meal != null) {
+                _selectedMeal.value = MealWithFoods(meal, foods)
+            }
+        }
+    }
+
+    fun clearSelectedMeal() {
+        _selectedMeal.value = null
+    }
     fun searchFoods(query: String) {
         if (query.isBlank()) {
             _searchResults.value = emptyList()
@@ -223,4 +243,9 @@ data class NutritionSummary(
     val totalFats: Float = 0f,
     val totalCarbohydrates: Float = 0f,
     val totalFiber: Float = 0f
+)
+
+data class MealWithFoods(
+    val meal: Meal,
+    val foods: List<FoodWithPortion>  // Au lieu de List<Pair<FoodItem, Float>>
 )
