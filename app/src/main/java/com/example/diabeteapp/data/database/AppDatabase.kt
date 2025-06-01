@@ -8,7 +8,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.diabeteapp.*
-
+import com.example.diabeteapp.data.entity.HealthTarget
 import com.example.diabeteapp.data.dao.*
 import android.content.Context
 
@@ -20,9 +20,10 @@ import android.content.Context
         FoodItem::class,
         Advice::class,
         UserMealCrossRef::class,
-        MealFoodCrossRef::class
+        MealFoodCrossRef::class,
+        HealthTarget::class
     ],
-    version = 4
+    version = 5
 
 )
 @TypeConverters(
@@ -35,6 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun adviceDao(): AdviceDao
     abstract fun userMealCrossRefDao(): UserMealCrossRefDao
     abstract fun mealFoodCrossRefDao(): MealFoodCrossRefDao
+    abstract fun healthTargetDao(): HealthTargetDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null

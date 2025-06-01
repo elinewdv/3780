@@ -21,25 +21,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-
-data class HealthTarget(
-    val id: String,
-    val title: String,
-    val current: String,
-    val currentValue: Float,
-    val target: String,
-    val targetValue: Float,
-    val unit: String,
-    val color: Color
-)
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.diabeteapp.data.entity.HealthTarget
+import com.example.diabeteapp.data.repository.HealthTargetRepository
+import com.example.diabeteapp.data.database.AppDatabase
 
 @Composable
 fun TargetPageScreen() {
+    val context = LocalContext.current
+
+    // Create ViewModel with manual dependency injection
+    val viewModel: HealthTargetViewModel = viewModel {
+        val database = AppDatabase.getDatabase(context)
+        val repository = HealthTargetRepository(database.healthTargetDao())
+        HealthTargetViewModel(repository)
+    }
+
     val color = Color(0xFF2264FF)
     val scrollState = rememberScrollState()
 
-    var targets by remember { mutableStateOf(emptyList<HealthTarget>()) }
-    var selectedRingTarget by remember { mutableStateOf<HealthTarget?>(null) }
+    // Collect database states
+    val targets by viewModel.allTargets.collectAsState(initial = emptyList())
+    val selectedRingTarget by viewModel.selectedRingTarget.collectAsState(initial = null)
+    val isLoading by viewModel.isLoading.collectAsState()
+
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var targetToEdit by remember { mutableStateOf<HealthTarget?>(null) }
@@ -59,6 +65,15 @@ fun TargetPageScreen() {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+
+        // Show loading indicator
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = color
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         // Show progress ring only if there's a selected target
         if (selectedRingTarget != null) {
@@ -114,10 +129,10 @@ fun TargetPageScreen() {
         AddTargetDialog(
             onDismiss = { showAddDialog = false },
             onAdd = { newTarget ->
-                targets = targets + newTarget
+                viewModel.addTarget(newTarget)
                 // If this is the first target, automatically select it for the ring
                 if (selectedRingTarget == null) {
-                    selectedRingTarget = newTarget
+                    viewModel.setRingTarget(newTarget.id)
                 }
                 showAddDialog = false
             }
@@ -135,24 +150,17 @@ fun TargetPageScreen() {
                 targetToEdit = null
             },
             onSave = { updatedTarget ->
-                targets = targets.map { if (it.id == currentTarget.id) updatedTarget else it }
-                if (selectedRingTarget?.id == currentTarget.id) {
-                    selectedRingTarget = updatedTarget
-                }
+                viewModel.updateTarget(updatedTarget)
                 showEditDialog = false
                 targetToEdit = null
             },
             onDelete = {
-                targets = targets.filter { it.id != currentTarget.id }
-                if (selectedRingTarget?.id == currentTarget.id) {
-                    val remainingTargets = targets.filter { it.id != currentTarget.id }
-                    selectedRingTarget = remainingTargets.firstOrNull()
-                }
+                viewModel.deleteTarget(currentTarget)
                 showEditDialog = false
                 targetToEdit = null
             },
             onSelectForRing = {
-                selectedRingTarget = currentTarget
+                viewModel.setRingTarget(currentTarget.id)
             }
         )
     }
@@ -255,7 +263,7 @@ fun ProgressRing(
 ) {
     val progress = when {
         target.targetValue == 0f -> 0f
-        target.id == "blood_sugar" -> {
+        target.id.contains("blood_sugar") -> {
             // Special handling for blood sugar
             val current = target.currentValue
             when {
@@ -264,10 +272,10 @@ fun ProgressRing(
                 else -> (current - 80f) / (130f - 80f)
             }
         }
-        target.id == "weight" -> {
+        target.id.contains("weight") -> {
             // For weight loss, closer to target = more progress
             val current = target.currentValue
-            val startWeight = 75f // Assume starting weight
+            val startWeight = 75f
             val targetWeight = target.targetValue
             1f - ((current - targetWeight) / (startWeight - targetWeight)).coerceIn(0f, 1f)
         }
@@ -421,8 +429,8 @@ fun AddTargetDialog(
                     Button(
                         onClick = {
                             if (title.isNotBlank() && current.isNotBlank() && target.isNotBlank()) {
-                                val newTarget = HealthTarget(
-                                    id = title.lowercase().replace(" ", "_"),
+                                val newTarget = HealthTarget.fromComposeColor(
+                                    id = title.lowercase().replace(" ", "_") + "_" + System.currentTimeMillis(),
                                     title = title,
                                     current = current,
                                     currentValue = current.toFloatOrNull() ?: 0f,
@@ -578,15 +586,16 @@ fun EditDialog(
                         Button(
                             onClick = {
                                 if (title.isNotBlank() && current.isNotBlank() && targetValue.isNotBlank()) {
-                                    val updatedTarget = HealthTarget(
-                                        id = target.id,
+                                    val updatedTarget = HealthTarget.fromComposeColor(
+                                        id = target.id, // Keep same ID
                                         title = title,
                                         current = current,
                                         currentValue = current.toFloatOrNull() ?: 0f,
                                         target = targetValue,
                                         targetValue = targetValue.toFloatOrNull() ?: 1f,
                                         unit = unit,
-                                        color = selectedColor
+                                        color = selectedColor,
+                                        isSelectedForRing = isSelectedForRing
                                     )
                                     onSave(updatedTarget)
                                 }
