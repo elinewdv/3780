@@ -26,13 +26,16 @@ Patients with diabetes or obesity often lack accessible tools to track their nut
 **Step 1.** Requirements : 
   - **Android :** https://developer.android.com/studio
   - **Github repository :** https://github.com/elinewdv/3780.git
+    
 **Step 2.** Clone the GitHub repository :
   - Open Android Studio
   - Select **Get from VCS**
   - Paste the GitHub URL
+
 **Step 3.** Synchronize Gradle :
 Once the project is open :
   - Go to **File > Sync Project with Gradle Files**
+
 **Step 4.** Configure an Emulator :
 Set up an emulator :
   - Go to **Tools > Device Manager**
@@ -40,10 +43,12 @@ Set up an emulator :
   - Choose a phone (e.g., Pixel 6) > Next
   - Choose a system image (API 30–34) > Download if needed > Next
   - Finish setup and launch the emulator
+
 **Step 5.** Run the App :
   - Make sure the **app module** is selected in the top Run configuration dropdown
   - Choose your emulator or device from the device list
   - Click the **Run** button ▶️
+
 **Troubleshooting**
   - No modules appear in Run configuration :
       - Check that settings.gradle includes the module (e.g., ':app')
