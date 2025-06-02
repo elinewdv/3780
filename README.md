@@ -21,6 +21,18 @@ Patients with diabetes or obesity often lack accessible tools to track their nut
 - Help users recognize patterns that affect blood sugar
 - Provide a Norwegian focused food database using trusted APIs
 
+## How to run Jumper ?
+
+**Step 1.** Download requirements : 
+  - **Android :** https://developer.android.com/studio
+  - Github
+**Step 2.** Run the installer and check all default options:
+  - Android SDK
+  - Android Emulator
+  - Android Virtual Device (AVD)
+
+
+
   ## Key features
   - **Meal Tracking** - Log meals and snacks with nutritional breakdown
   - **Food Database Integrations** - Uses Matvaretabellen API to retrieve food values
