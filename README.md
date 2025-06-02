@@ -23,7 +23,15 @@ Patients with diabetes or obesity often lack accessible tools to track their nut
 
 ## How to run Jumper ?
 
-Step 1 : Download Android Studio https://redirector.gvt1.com/edgedl/android/studio/install/2024.3.2.15/android-studio-2024.3.2.15-windows.exe
+**Step 1.** Download requirements : 
+  - **Android :** https://developer.android.com/studio
+  - Github
+**Step 2.** Run the installer and check all default options:
+  - Android SDK
+  - Android Emulator
+  - Android Virtual Device (AVD)
+
+
 
   ## Key features
   - **Meal Tracking** - Log meals and snacks with nutritional breakdown
