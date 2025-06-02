@@ -23,15 +23,39 @@ Patients with diabetes or obesity often lack accessible tools to track their nut
 
 ## How to run Jumper ?
 
-**Step 1.** Download requirements : 
+**Step 1.** Requirements : 
   - **Android :** https://developer.android.com/studio
-  - Github
-**Step 2.** Run the installer and check all default options:
-  - Android SDK
-  - Android Emulator
-  - Android Virtual Device (AVD)
-
-
+  - **Github repository :** https://github.com/elinewdv/3780.git
+**Step 2.** Clone the GitHub repository :
+  - Open Android Studio
+  - Select **Get from VCS**
+  - Paste the GitHub URL
+**Step 3.** Synchronize Gradle :
+Once the project is open :
+  - Go to **File > Sync Project with Gradle Files**
+**Step 4.** Configure an Emulator :
+Set up an emulator :
+  - Go to **Tools > Device Manager**
+  - Click **Create Device**
+  - Choose a phone (e.g., Pixel 6) > Next
+  - Choose a system image (API 30–34) > Download if needed > Next
+  - Finish setup and launch the emulator
+**Step 5.** Run the App :
+  - Make sure the **app module** is selected in the top Run configuration dropdown
+  - Choose your emulator or device from the device list
+  - Click the **Run** button ▶️
+**Troubleshooting**
+  - No modules appear in Run configuration :
+      - Check that settings.gradle includes the module (e.g., ':app')
+      - Ensure the app folder has a valid build.gradle with :
+        plugins {
+          id 'com.android.application'
+        }
+      - Rebuild the project : **Build > Rebuild Project**
+  - Gradle sync fails :
+      - Try **File > Invalidate Caches / Restart**
+      - Use correct **JDK version 17**
+    
 
   ## Key features
   - **Meal Tracking** - Log meals and snacks with nutritional breakdown
