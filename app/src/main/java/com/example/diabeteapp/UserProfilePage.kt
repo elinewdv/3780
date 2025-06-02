@@ -86,6 +86,7 @@ fun UserProfilePageScreen(navController: NavHostController, sessionManager: Sess
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val db = remember { AppDatabase.getDatabase(context) }
+    var showDisclaimerDialog by remember { mutableStateOf(false) }
 
     var height by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
@@ -125,11 +126,12 @@ fun UserProfilePageScreen(navController: NavHostController, sessionManager: Sess
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Disclaimer Box
+        // Disclaimer Box - Maintenant cliquable
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFD99900)),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            onClick = { showDisclaimerDialog = true } // Ouvre le dialogue au clic
         ) {
             Row(
                 modifier = Modifier.padding(12.dp),
@@ -139,6 +141,31 @@ fun UserProfilePageScreen(navController: NavHostController, sessionManager: Sess
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("DISCLAIMER", fontWeight = FontWeight.Bold, color = Color.Black)
             }
+        }
+
+        // Dialogue du Disclaimer
+        if (showDisclaimerDialog) {
+            AlertDialog(
+                onDismissRequest = { showDisclaimerDialog = false },
+                title = {
+                    Text("Data Privacy Notice", fontWeight = FontWeight.Bold)
+                },
+                text = {
+                    Text(
+                        "The information provided on this page is stored securely on servers compliant with Norwegian health data hosting regulations. " +
+                                "These data are used exclusively within the app to enhance the user experience. " +
+                                "Under no circumstances will this information be shared with third parties or used for commercial purposes."
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showDisclaimerDialog = false },
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF2264FF))
+                    ) {
+                        Text("UNDERSTOOD")
+                    }
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(10.dp))

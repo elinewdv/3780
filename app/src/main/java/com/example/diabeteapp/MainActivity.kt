@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
             FoodViewModelFactory(application)
         )[FoodViewModel::class.java]
 
-        // Lancement du test API après un court délai
+
         lifecycleScope.launch {
             delay(2000)
             viewModel.manualApiTest()
@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
                                 popUpTo(0)
                             }
                         } else {
-                            navController.navigate(UserProfilePage) {
+                            navController.navigate(HomePage) {
                                 popUpTo(0)
                             }
                         }
