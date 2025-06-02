@@ -40,7 +40,7 @@ Once the project is open :
 Set up an emulator :
   - Go to **Tools > Device Manager**
   - Click **Create Device**
-  - Choose a phone (e.g., Pixel 6) > Next
+  - Choose a phone (Pixel 7) > Next
   - Choose a system image (API 30–34) > Download if needed > Next
   - Finish setup and launch the emulator
 
