@@ -59,6 +59,9 @@ class FoodViewModel(
     private val _selectedMeal = MutableStateFlow<MealWithFoods?>(null)
     val selectedMeal: StateFlow<MealWithFoods?> = _selectedMeal.asStateFlow()
 
+    private val _lastCreatedMeal = MutableStateFlow<Meal?>(null)
+    val lastCreatedMeal: StateFlow<Meal?> = _lastCreatedMeal.asStateFlow()
+
     init {
         // Calcul automatique des nutriments quand les aliments sélectionnés changent
         viewModelScope.launch {
@@ -181,6 +184,8 @@ class FoodViewModel(
                 )
 
                 val mealId = mealDao.insertMeal(meal)
+                val createdMeal = meal.copy(mealId = mealId)
+                _lastCreatedMeal.value = createdMeal
 
                 _selectedFoods.value.forEach { (foodItem, portion) ->
                     mealFoodCrossRefDao.insertCrossRef(
@@ -193,8 +198,8 @@ class FoodViewModel(
                 }
 
                 _saveSuccess.value = true
-                loadUserMeals(userId) // Recharge l'historique
-                clearMeal() // Ne clear que le repas en cours, pas la sélection
+                loadUserMeals(userId)
+                clearMeal()
             } catch (e: Exception) {
                 _saveSuccess.value = false
             } finally {

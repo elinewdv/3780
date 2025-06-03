@@ -412,9 +412,9 @@ private fun NutritionPreview(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 NutrientItem("Calories", "${nutritionSummary.totalCalories.toInt()}", "kcal")
-                NutrientItem("Protéines", "${nutritionSummary.totalProteins.toInt()}", "g")
-                NutrientItem("Glucides", "${nutritionSummary.totalCarbohydrates.toInt()}", "g")
-                NutrientItem("Lipides", "${nutritionSummary.totalFats.toInt()}", "g")
+                NutrientItem("Proteins", "${nutritionSummary.totalProteins.toInt()}", "g")
+                NutrientItem("Glides", "${nutritionSummary.totalCarbohydrates.toInt()}", "g")
+                NutrientItem("Lipids", "${nutritionSummary.totalFats.toInt()}", "g")
             }
         }
     }
@@ -445,25 +445,10 @@ private fun NutritionSummaryDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Meal successfully registered !",
+                text = "Meal successfully registered!",
                 textAlign = TextAlign.Center,
                 color = Color(0xFF2264FF)
             )
-        },
-        text = {
-            Column {
-                Text(
-                    text = "Summary of the Meal :",
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Text("• Calories : ${nutritionSummary.totalCalories.toInt()} kcal")
-                Text("• Protéines : ${nutritionSummary.totalProteins.toInt()} g")
-                Text("• Glucides : ${nutritionSummary.totalCarbohydrates.toInt()} g")
-                Text("• Lipides : ${nutritionSummary.totalFats.toInt()} g")
-                Text("• Fibres : ${nutritionSummary.totalFiber.toInt()} g")
-            }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

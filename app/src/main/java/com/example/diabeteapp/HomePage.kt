@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
@@ -31,7 +32,7 @@ fun HomePageScreen(navController: NavHostController, sessionManager: SessionMana
         Spacer(modifier = Modifier.height(5.dp))
         Text("Welcome", color = Color(0xFF2264FF), style = MaterialTheme.typography.headlineLarge,)
         Spacer(modifier = Modifier.height(5.dp))
-        Text("Empowering patients to take control of their health is the future of medicine.",color = Color(0xFF2264FF))
+        Text("Empowering patients to take control of their health is the future of medicine.",color = Color(0xFF2264FF), textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(25.dp))
         Button(onClick = { navController.navigate(SignPage) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2264FF))

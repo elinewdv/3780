@@ -23,7 +23,7 @@ import android.content.Context
         MealFoodCrossRef::class,
         HealthTarget::class
     ],
-    version = 5
+    version = 6
 
 )
 @TypeConverters(
